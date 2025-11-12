@@ -20,7 +20,20 @@ import { AuthService } from '../../services/auth.service';
             </div>
             <div class="form-group">
               <label>Password</label>
-              <input type="password" [(ngModel)]="credentials.password" name="password" required>
+              <div class="password-input-wrapper">
+                <input 
+                  [type]="showPassword ? 'text' : 'password'" 
+                  [(ngModel)]="credentials.password" 
+                  name="password" 
+                  required>
+                <button 
+                  type="button" 
+                  class="toggle-password" 
+                  (click)="togglePasswordVisibility()"
+                  [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                  {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+                </button>
+              </div>
             </div>
             <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
             <div class="buttons">
@@ -81,6 +94,35 @@ import { AuthService } from '../../services/auth.service';
     .links a:hover {
       text-decoration: underline;
     }
+
+    .password-input-wrapper {
+      position: relative;
+    }
+
+    .password-input-wrapper input {
+      width: 100%;
+      padding-right: 45px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 5px;
+      color: #667eea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-password:hover {
+      opacity: 0.7;
+    }
   `]
 })
 export class LoginComponent {
@@ -89,11 +131,16 @@ export class LoginComponent {
     password: ''
   };
   errorMessage = '';
+  showPassword = false;
 
   constructor(
     private authService: AuthService,
     private router: Router
   ) {}
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
 
   onSubmit() {
     this.authService.login(this.credentials).subscribe({
